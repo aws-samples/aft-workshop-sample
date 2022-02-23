@@ -1,11 +1,12 @@
-## My Project
+## aft-workshop-sample
 
-TODO: Fill this README out!
+Sample repository and customization for AWS Control Tower Account Factory for Terraform (AFT).
 
-Be sure to:
+This repository is part of AFT lab. For detailed walkthrough, please check the lab in [AWS Control Tower Workshop](https://controltower.aws-management.tools/automation/).
 
-* Change the title in this README
-* Edit your repository description on GitHub
+## How to use 
+
+There are four branches in this repository, navigate to each branch for more content. Refer to instruction on [AWS Control Tower Workshop](https://controltower.aws-management.tools/automation/) for detailed walkthrough.
 
 ## Security
 
