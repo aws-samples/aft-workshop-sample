@@ -1,0 +1,90 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "action": {
+            "type": "string",
+            "enum": ["add", "extract", "validate", "remove"]
+        },
+        "job_name": {
+            "type": "string"
+        },
+        "payload": {
+            "type": "object",
+            "properties": {
+                "control_tower_parameters": {
+                    "type": "object",
+                    "properties": {
+                        "AccountEmail": {
+                            "type": "string"
+                        },
+                        "AccountName": {
+                            "type": "string"
+                        },
+                        "ManagedOrganizationalUnit": {
+                            "type": "string"
+                        },
+                        "SSOUserEmail": {
+                            "type": "string"
+                        },
+                        "SSOUserFirstName": {
+                            "type": "string"
+                        },
+                        "SSOUserLastName": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "AccountEmail",
+                        "AccountName",
+                        "ManagedOrganizationalUnit",
+                        "SSOUserEmail",
+                        "SSOUserFirstName",
+                        "SSOUserLastName"
+                    ]
+                },
+                "alternate_contact": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "email-address": {
+                                "type": "string",
+                                "pattern": "[\\w+=,.-]+@[\\w.-]+\\.[\\w]+"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "phone-number": {
+                                "type": "string",
+                                "pattern": "^[\\s0-9()+-]+$"
+                            },
+                            "title": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "email-address",
+                            "name",
+                            "phone-number",
+                            "title"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "control_tower_parameters",
+                "alternate_contact"
+            ]
+        }
+    },
+    "required": [
+        "action",
+        "job_name",
+        "payload"
+    ]
+}

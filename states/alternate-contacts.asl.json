@@ -1,0 +1,147 @@
+{
+  "Comment": "AFT Alternate Contacts Customizations",
+  "StartAt": "custom_fields_exist?",
+  "States": {
+    "custom_fields_exist?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.account_request.custom_fields",
+          "IsPresent": true,
+          "Next": "extract-alternate-contacts",
+          "Comment": "Check if custom_fields present"
+        }
+      ],
+      "Default": "skip"
+    },
+    "extract-alternate-contacts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${data_aft_alternate_contacts_extract_lambda}:$LATEST",
+        "Payload": {
+          "job_name.$": "$$.Execution.Name",
+          "payload.$": "$",
+          "action": "extract"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "alternate_contacts_exist?",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "fail"
+        }
+      ],
+      "ResultSelector": {
+        "job_name.$": "$$.Execution.Name",
+        "payload.$": "$.Payload",
+        "action": "validate"
+      }
+    },
+    "fail": {
+      "Type": "Fail"
+    },
+    "alternate_contacts_exist?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Or": [
+            {
+              "Variable": "$.payload.alternate_contact.billing",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.payload.alternate_contact.operations",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.payload.alternate_contact.security",
+              "IsPresent": true
+            }
+          ],
+          "Next": "validate-alternate-contacts"
+        }
+      ],
+      "Default": "fail"
+    },
+    "validate-alternate-contacts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${data_aft_alternate_contacts_validate_lambda}:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "add-alternate-contacts",
+      "ResultPath": null
+    },
+    "add-alternate-contacts": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${data_aft_alternate_contacts_add_lambda}:$LATEST",
+        "Payload": {
+          "job_name.$": "$$.Execution.Name",
+          "payload.$": "$.payload",
+          "action": "add"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "add-wait-time",
+      "ResultSelector": {
+        "job_name.$": "$$.Execution.Name",
+        "payload.$": "$.Payload",
+        "action": "add"
+      }
+    },
+    "add-wait-time": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "success",
+      "Comment": "add wait time to avoid throttle"
+    },
+    "success": {
+      "Type": "Succeed"
+    },
+    "skip": {
+      "Type": "Pass",
+      "Next": "success"
+    }
+  }
+}
