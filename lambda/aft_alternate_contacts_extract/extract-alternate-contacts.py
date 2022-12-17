@@ -28,6 +28,8 @@ else:
 def extract_custom_fields(payload):
   try:
     raw_data = json.loads(payload['account_request']['custom_fields'])
+    if 'alternate_contact' not in raw_data:
+        return {}
     raw_alternate_contact = json.loads(raw_data['alternate_contact'])
     return raw_alternate_contact
   except Exception as e:

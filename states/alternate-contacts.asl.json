@@ -76,7 +76,7 @@
           "Next": "validate-alternate-contacts"
         }
       ],
-      "Default": "fail"
+      "Default": "skip"
     },
     "validate-alternate-contacts": {
       "Type": "Task",
