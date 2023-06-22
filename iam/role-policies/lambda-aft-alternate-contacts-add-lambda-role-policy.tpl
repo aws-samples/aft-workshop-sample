@@ -5,7 +5,10 @@
             "Action": [
                 "ssm:GetParameter"
             ],
-            "Resource": "arn:aws:ssm:${data_aws_region}:${data_aws_account_id}:parameter/aft/resources/ddb/aft-request-metadata-table-name",
+            "Resource": [
+                "arn:aws:ssm:${data_aws_region}:${data_aws_account_id}:parameter/aft/resources/ddb/aft-request-metadata-table-name",
+                "arn:aws:ssm:${data_aws_region}:${data_aws_account_id}:parameter/aft/account/ct-management/account-id"
+            ],
             "Effect": "Allow",
             "Sid": "SSMOperations"
         },
