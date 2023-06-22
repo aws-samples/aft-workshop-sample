@@ -22,6 +22,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 SSM_AFT_REQUEST_METADATA_PATH = "/aft/resources/ddb/aft-request-metadata-table-name"
+SSM_CT_MANAGEMENT_ACCOUNT_ID_PATH = "/aft/account/ct-management/account-id"
 AFT_REQUEST_METADATA_EMAIL_INDEX = "emailIndex"
 session = boto3.Session()
 logger = logging.getLogger()
@@ -49,13 +50,13 @@ def lookup_aft_request_metadata(ct_parameters):
       KeyConditionExpression=Key("email").eq(account_email))
     account_id = query_response["Items"][0]["id"]
     logger.info("Account id found")
-    
+
     return account_id
     
   except Exception as e:
     logger.exception("Error on lookup_aft_request_metadata - {}".format(e))
     raise
-  
+
 def update_alternate_contact(account_id, contact_payload):
   try:
     account_client = session.client("account")
@@ -75,6 +76,20 @@ def update_alternate_contact(account_id, contact_payload):
     logger.exception("Error on update_alternate_contact - {}".format(e))
     raise
 
+def is_ct_management_account_id(account_id):
+  try:
+    # check if the account_id == CT Management account id
+    ssm_client = session.client("ssm")
+    ssm_response = ssm_client.get_parameter(
+      Name=SSM_CT_MANAGEMENT_ACCOUNT_ID_PATH)
+    ct_management_account_id = ssm_response["Parameter"]["Value"]
+    if account_id == ct_management_account_id:
+      logger.info("This is the CT Management Account id")
+      return True
+  except Exception as e:
+    logger.exception("Error on is_ct_management_account_id - {}".format(e))
+    raise
+
 def lambda_handler(event, context):
   try:
       logger.info("AFT Account Alternate Contact - Handler Start")
@@ -87,7 +102,12 @@ def lambda_handler(event, context):
       if action == "add":
           logger.info("Look up metadata table from {}".format(SSM_AFT_REQUEST_METADATA_PATH))
           account_id = lookup_aft_request_metadata(ct_parameters)
-          update_status = update_alternate_contact(account_id, payload["alternate_contact"])
+          if is_ct_management_account_id(account_id):
+            # skip if the account_id == CT Management account id
+            logger.error("Unable to add alternate contact to CT Management Account, skipping")
+            update_status = True
+          else:
+            update_status = update_alternate_contact(account_id, payload["alternate_contact"])
           return update_status
       else:
           raise Exception(
