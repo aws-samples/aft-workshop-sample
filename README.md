@@ -6,7 +6,11 @@ This repository is part of AFT lab. For detailed walkthrough, please check the l
 
 ## How to use 
 
-There are four branches in this repository, navigate to each branch for more content. Refer to instruction on [AWS Control Tower Workshop](https://controltower.aws-management.tools/automation/) for detailed walkthrough.
+There are multiple branches in this repository, navigate to each branch for more content. Refer to instruction on [AWS Control Tower Workshop](https://controltower.aws-management.tools/automation/) for detailed walkthrough.
+
+## Terraform Cloud AFT Customizations
+
+For Terraform Cloud specific customizations, navigate to the **aft-tfc** branch. Refer to the blog post for more information. 
 
 ## Security
 
