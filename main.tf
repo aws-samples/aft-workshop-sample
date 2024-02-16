@@ -33,6 +33,7 @@ resource "aws_iam_instance_profile" "cloud9-aft-profile" {
 
 resource "aws_cloud9_environment_ec2" "cloud9-aft" {
   name          = var.c9_instance_name
+  image_id      = "amazonlinux-2-x86_64"
   instance_type = "t2.small"
   subnet_id     = local.vpc.is_use_aft_vpc ? data.aws_subnet.aft_public_subnet_01[local.vpc.index].id : null
 }
