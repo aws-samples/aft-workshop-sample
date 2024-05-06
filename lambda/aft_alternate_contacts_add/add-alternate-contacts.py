@@ -20,10 +20,19 @@ import os
 from time import sleep
 import boto3
 from boto3.dynamodb.conditions import Key
+from botocore.config import Config
 
 SSM_AFT_REQUEST_METADATA_PATH = "/aft/resources/ddb/aft-request-metadata-table-name"
 SSM_CT_MANAGEMENT_ACCOUNT_ID_PATH = "/aft/account/ct-management/account-id"
 AFT_REQUEST_METADATA_EMAIL_INDEX = "emailIndex"
+
+boto3_config = Config(
+   retries = {
+      'max_attempts': 10,
+      'mode': 'adaptive'
+   }
+)
+
 session = boto3.Session()
 logger = logging.getLogger()
 if 'log_level' in os.environ:
@@ -59,7 +68,7 @@ def lookup_aft_request_metadata(ct_parameters):
 
 def update_alternate_contact(account_id, contact_payload):
   try:
-    account_client = session.client("account")
+    account_client = session.client("account", config=boto3_config)
     for contact_type, contact_detail in contact_payload.items():
       logger.info("Add alternate contact {}".format(contact_type))
       account_response = account_client.put_alternate_contact(
@@ -70,7 +79,7 @@ def update_alternate_contact(account_id, contact_payload):
           PhoneNumber=contact_detail["phone-number"],
           Title=contact_detail["title"]
       )
-      sleep(0.5)
+      sleep(1)
     return True
   except Exception as e:
     logger.exception("Error on update_alternate_contact - {}".format(e))
