@@ -15,6 +15,10 @@ data "aws_dynamodb_table" "aft_request_metadata_table" {
   name = data.aws_ssm_parameter.aft_request_metadata_table_name.value
 }
 
+data "aws_ssm_parameter" "aft_customizations_max_concurrent" {
+  name = "/aft/config/customizations/maximum_concurrent_customizations"
+}
+
 data "archive_file" "aft_alternate_contacts_extract" {
   type        = "zip"
   source_dir  = "${path.module}/lambda/aft_alternate_contacts_extract"
