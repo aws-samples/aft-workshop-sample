@@ -2,7 +2,8 @@
 
 Sample repository and customization for AWS Control Tower Account Factory for Terraform (AFT).
 
-This repository is part of AFT lab. For detailed walkthrough, please check the lab in [AWS Control Tower Workshop](https://catalog.workshops.aws/control-tower/en-US/customization).
+This repository is part of AFT lab. For detailed walkthrough, please check the lab in [AWS Control Tower - Account Factory for Terraform (AFT)
+](https://catalog.workshops.aws/control-tower/en-US/customization/aft).
 
 ## How to use 
 
