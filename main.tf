@@ -31,6 +31,12 @@ resource "aws_iam_instance_profile" "cloud9-aft-profile" {
   role = aws_iam_role.cloud9-aft-role.name
 }
 
+
+resource "aws_ec2_instance_metadata_defaults" "enforce-imdsv2" {
+  http_endpoint = "enabled"
+  http_tokens = "required"
+}
+
 resource "aws_cloud9_environment_ec2" "cloud9-aft" {
   name          = var.c9_instance_name
   image_id      = "amazonlinux-2-x86_64"
