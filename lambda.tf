@@ -1,6 +1,11 @@
 # Update Alternate Contacts
 ## Lambda functions
 
+locals {
+  lambda_runtime = "python3.13"
+}
+
+
 resource "aws_lambda_function" "aft_alternate_contacts_extract_lambda" {
   filename         = data.archive_file.aft_alternate_contacts_extract.output_path
   function_name    = "aft-alternate-contacts-extract"
@@ -8,7 +13,7 @@ resource "aws_lambda_function" "aft_alternate_contacts_extract_lambda" {
   role             = aws_iam_role.aft_alternate_contacts_extract_lambda_role.arn
   handler          = "extract-alternate-contacts.lambda_handler"
   source_code_hash = data.archive_file.aft_alternate_contacts_extract.output_base64sha256
-  runtime          = "python3.9"
+  runtime          = local.lambda_runtime
   timeout          = 30
   tracing_config {
     mode = "Active"
@@ -28,7 +33,7 @@ resource "aws_lambda_function" "aft_alternate_contacts_add_lambda" {
   role             = aws_iam_role.aft_alternate_contacts_add_lambda_role.arn
   handler          = "add-alternate-contacts.lambda_handler"
   source_code_hash = data.archive_file.aft_alternate_contacts_add.output_base64sha256
-  runtime          = "python3.9"
+  runtime          = local.lambda_runtime
   timeout          = 30
   tracing_config {
     mode = "Active"
@@ -48,7 +53,7 @@ resource "aws_lambda_function" "aft_alternate_contacts_validate_lambda" {
   role             = aws_iam_role.aft_alternate_contacts_validate_lambda_role.arn
   handler          = "validate-alternate-contacts.lambda_handler"
   source_code_hash = data.archive_file.aft_alternate_contacts_validate.output_base64sha256
-  runtime          = "python3.9"
+  runtime          = local.lambda_runtime
   timeout          = 30
   tracing_config {
     mode = "Active"
