@@ -5,7 +5,6 @@ locals {
   lambda_runtime = "python3.13"
 }
 
-
 resource "aws_lambda_function" "aft_alternate_contacts_extract_lambda" {
   filename         = data.archive_file.aft_alternate_contacts_extract.output_path
   function_name    = "aft-alternate-contacts-extract"
